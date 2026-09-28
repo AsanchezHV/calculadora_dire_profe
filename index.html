@@ -127,12 +127,12 @@
         <input type="number" id="tarifaClase" value="19" step="0.01">
       </div>
       <div class="prof-field">
-        <label>Horas extra / semana</label>
-        <input type="number" id="horasExtra" value="0" step="0.5" min="0">
+        <label>Clases extra / día</label>
+        <input type="number" id="clasesDia" value="0" step="0.5" min="0">
       </div>
       <div class="prof-field">
-        <label>Semanas / mes</label>
-        <input type="number" id="semanasMes" value="4.33" step="0.01">
+        <label>Días laborables / mes</label>
+        <input type="number" id="diasMes" value="22" step="1">
       </div>
     </div>
     <div class="prof-total">
@@ -151,7 +151,7 @@ let turno = 'tarde';
 el('btnManana').addEventListener('click', ()=>{ turno='manana'; el('btnManana').classList.add('on'); el('btnTarde').classList.remove('on'); render(); });
 el('btnTarde').addEventListener('click', ()=>{ turno='tarde'; el('btnTarde').classList.add('on'); el('btnManana').classList.remove('on'); render(); });
 
-['nProfes','baseActual','stepActual','salProfeTop','plusBase','stepNuevo','salManana','salTarde','tarifaClase','horasExtra','semanasMes']
+['nProfes','baseActual','stepActual','salProfeTop','plusBase','stepNuevo','salManana','salTarde','tarifaClase','clasesDia','diasMes']
   .forEach(id=> el(id).addEventListener('input', render));
 
 function buildLadder(container, steps, activeIndex){
@@ -194,17 +194,18 @@ function render(){
   const salManana = parseFloat(el('salManana').value)||0;
   const salTarde = parseFloat(el('salTarde').value)||0;
   const tarifaClase = parseFloat(el('tarifaClase').value)||0;
-  const horasExtra = parseFloat(el('horasExtra').value)||0;
-  const semanasMes = parseFloat(el('semanasMes').value)||4.33;
+  const clasesDia = parseFloat(el('clasesDia').value)||0;
+  const diasMes = parseFloat(el('diasMes').value)||22;
 
   const base = turno==='manana' ? salManana : salTarde;
-  const clasesPorHoraExtra = horasExtra / 0.75; // nº clases de 0,75h equivalentes
-  const importeExtra = clasesPorHoraExtra * tarifaClase * semanasMes;
+  const clasesMes = clasesDia * diasMes;
+  const horasExtraMes = clasesMes * 0.75;
+  const importeExtra = clasesMes * tarifaClase;
   const total = base + importeExtra;
 
   el('c_totalProfe').textContent = fmtE(total);
   el('c_breakdown').textContent =
-    `Base turno ${turno==='manana'?'mañana':'tarde'}: ${fmtE(base)} + ${horasExtra}h extra/semana (${clasesPorHoraExtra.toFixed(1)} clases) × ${tarifaClase.toLocaleString('es-ES',{minimumFractionDigits:2})}€ × ${semanasMes} sem. = ${fmtE(importeExtra)}`;
+    `Base turno ${turno==='manana'?'mañana':'tarde'}: ${fmtE(base)} + ${clasesDia} clases/día × ${diasMes} días = ${clasesMes.toFixed(0)} clases/mes (${horasExtraMes.toFixed(1)}h) × ${tarifaClase.toLocaleString('es-ES',{minimumFractionDigits:2})}€/clase = ${fmtE(importeExtra)}`;
 }
 render();
 </script>
